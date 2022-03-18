@@ -1,0 +1,1 @@
+package com.tastyfood.service.discovery;
