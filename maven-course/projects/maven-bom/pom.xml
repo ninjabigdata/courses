@@ -18,8 +18,31 @@
     </parent>
 
     <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <encoding.format>UTF-8</encoding.format>
+        <project.build.sourceEncoding>${encoding.format}</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>${encoding.format}</project.reporting.outputEncoding>
+        <java.version>11</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
     </properties>
+
+    <licenses>
+        <license>
+            <name>GNU General Public License v3.0</name>
+            <url>https://www.gnu.org/licenses/gpl.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Balaji Sridharan</name>
+            <email>ninjabigdata@gmail.com</email>
+            <organization>Ninja Big Data Org</organization>
+        </developer>
+    </developers>
+
+    <organization>
+        <name>Ninja Big Data Org</name>
+    </organization>
 
 </project>
