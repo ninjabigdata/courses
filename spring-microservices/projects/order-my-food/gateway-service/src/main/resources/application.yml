@@ -1,6 +1,12 @@
 spring:
   application:
     name: 'gateway-service'
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lowerCaseServiceId: true
 
 server:
   port: 8900
@@ -12,6 +18,8 @@ management:
         include: '*'
 
 eureka:
+  instance:
+    prefer-ip-address: true
   client:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/

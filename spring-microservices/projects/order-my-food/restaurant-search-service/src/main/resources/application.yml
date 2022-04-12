@@ -1,6 +1,8 @@
 spring:
   application:
     name: 'restaurant-search-service'
+  zipkin:
+    base-url: http://localhost:9411/
 
 server:
   port: 9000
@@ -12,6 +14,16 @@ management:
         include: '*'
 
 eureka:
+  instance:
+    prefer-ip-address: true
   client:
     serviceUrl:
       defaultZone: 'http://localhost:8761/eureka/'
+
+logging:
+  level:
+    com:
+      tastyfood:
+        resturant:
+          service: INFO
+
