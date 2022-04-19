@@ -9,4 +9,7 @@ import java.util.Set;
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
     Set<Item> findAllByRestaurant(Restaurant restaurant);
+
+    Set<Item> findAllByRestaurantId(Long restaurantId);
+
 }

@@ -1,16 +1,11 @@
 package com.tastyfood.restaurant.service.controller;
 
-import com.tastyfood.restaurant.service.dto.ResponseCode;
-import com.tastyfood.restaurant.service.dto.ResponseDTO;
-import com.tastyfood.restaurant.service.dto.RestaurantDTO;
-import com.tastyfood.restaurant.service.dto.RestaurantSearchDTO;
+import com.tastyfood.restaurant.service.dto.*;
 import com.tastyfood.restaurant.service.service.RestaurantService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Objects;
@@ -37,18 +32,42 @@ public class RestaurantController {
 
             responseDTO.responseCode(ResponseCode.ERROR)
                     .response("Atleast one criterion is required for searching");
+        } else {
+            List<RestaurantDTO> restaurants = restaurantService.searchRestaurants(restaurantSearchDTO);
+
+            log.debug("Restaurants matching the search criteria are - {}", restaurants);
+
+            responseDTO.responseCode(ResponseCode.SUCCESS)
+                    .response(restaurants);
         }
-
-        List<RestaurantDTO> restaurants = restaurantService.searchRestaurants(restaurantSearchDTO);
-
-        log.debug("Restaurants matching the search criteria are - {}", restaurants);
-
-        responseDTO.responseCode(ResponseCode.SUCCESS)
-                .response(restaurants);
 
         log.debug("Response from search is {}", responseDTO.build());
 
         return responseDTO.build();
+    }
+
+    @GetMapping("{restaurantId}/menu")
+    public ResponseDTO getMenu(@PathVariable("restaurantId") Long restaurantId) {
+        ResponseDTO.ResponseDTOBuilder response = ResponseDTO.builder();
+
+        if (Objects.isNull(restaurantId)) {
+
+            log.warn("Restaurant Id is required");
+
+            response.responseCode(ResponseCode.ERROR)
+                    .response("Restaurant Id is required");
+        } else {
+            List<ItemDTO> menu = restaurantService.getMenuByRestaurantId(restaurantId);
+
+            log.debug("Menu is - {}", menu);
+
+            response.responseCode(ResponseCode.SUCCESS)
+                    .response(menu);
+        }
+
+        log.debug("Response from menu is {}", response.build());
+
+        return response.build();
     }
 
 }
