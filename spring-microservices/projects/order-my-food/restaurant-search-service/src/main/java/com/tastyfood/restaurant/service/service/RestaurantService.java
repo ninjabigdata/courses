@@ -1,9 +1,11 @@
 package com.tastyfood.restaurant.service.service;
 
 import com.querydsl.core.BooleanBuilder;
+import com.tastyfood.restaurant.service.dto.RestaurantDTO;
 import com.tastyfood.restaurant.service.dto.RestaurantSearchDTO;
 import com.tastyfood.restaurant.service.entity.QRestaurant;
 import com.tastyfood.restaurant.service.entity.Restaurant;
+import com.tastyfood.restaurant.service.mappers.RestaurantMapper;
 import com.tastyfood.restaurant.service.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +15,8 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +25,7 @@ public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
 
-    public List<Restaurant> searchRestaurants(RestaurantSearchDTO restaurantSearchDTO) {
+    public List<RestaurantDTO> searchRestaurants(RestaurantSearchDTO restaurantSearchDTO) {
         QRestaurant restaurant = QRestaurant.restaurant;
 
         BooleanBuilder searchCriteria = new BooleanBuilder();
@@ -46,8 +50,9 @@ public class RestaurantService {
             searchCriteria.and(restaurant.distance.loe(restaurantSearchDTO.getDistance()));
         }
 
-        List<Restaurant> restaurants = new ArrayList<>();
-        restaurantRepository.findAll(searchCriteria).forEach(restaurants::add);
+        List<RestaurantDTO> restaurants = StreamSupport.stream(restaurantRepository.findAll(searchCriteria).spliterator(), false)
+                .map(RestaurantMapper.RESTAURANT_MAPPER :: toDTO)
+                .collect(Collectors.toList());
 
         log.debug("Fetched restaurants are {}", restaurants);
 

@@ -2,8 +2,8 @@ package com.tastyfood.restaurant.service.controller;
 
 import com.tastyfood.restaurant.service.dto.ResponseCode;
 import com.tastyfood.restaurant.service.dto.ResponseDTO;
+import com.tastyfood.restaurant.service.dto.RestaurantDTO;
 import com.tastyfood.restaurant.service.dto.RestaurantSearchDTO;
-import com.tastyfood.restaurant.service.entity.Restaurant;
 import com.tastyfood.restaurant.service.service.RestaurantService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +39,7 @@ public class RestaurantController {
                     .response("Atleast one criterion is required for searching");
         }
 
-        List<Restaurant> restaurants = restaurantService.searchRestaurants(restaurantSearchDTO);
+        List<RestaurantDTO> restaurants = restaurantService.searchRestaurants(restaurantSearchDTO);
 
         log.debug("Restaurants matching the search criteria are - {}", restaurants);
 
