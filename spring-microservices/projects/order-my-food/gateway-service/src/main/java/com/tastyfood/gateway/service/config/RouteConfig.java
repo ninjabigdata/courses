@@ -23,7 +23,8 @@ public class RouteConfig {
                                 .setFallbackUri("forward:/fallback")
                                 .addStatusCode("NOT_FOUND")
                                 .addStatusCode("INTERNAL_SERVER_ERROR")
-                                .setRouteId("RestaurantSearchFallback")))
+                                .setRouteId("RestaurantSearchFallback"))
+                                .rewritePath("/restaurant-search/(?<segment>.*)", "/$\\{segment}"))
                         .uri("lb://restaurant-search-service"))
                 .build();
     }
