@@ -3,6 +3,25 @@ spring:
     name: 'restaurant-search-service'
   zipkin:
     base-url: http://localhost:9411/
+  #DB Configuration
+  datasource:
+    url: 'jdbc:h2:mem:restaurantDB;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false'
+    driverClassName: 'org.h2.Driver'
+    username: sa
+    password: password
+  # Hibernate additional native properties to set on the JPA provider.
+  jpa:
+    properties:
+      hibernate:
+        dialect: 'org.hibernate.dialect.H2Dialect'
+        format_sql: true
+  # H2 Web Console (H2ConsoleProperties)
+  # Whether to enable the console.
+  h2:
+    console:
+      enabled: true
+  # Path at which the console is available.
+      path: '/h2-console'
 
 server:
   port: 9000
