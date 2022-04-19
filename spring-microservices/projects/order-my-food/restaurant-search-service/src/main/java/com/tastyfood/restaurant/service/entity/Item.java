@@ -1,7 +1,7 @@
 package com.tastyfood.restaurant.service.entity;
 
-import lombok.Builder;
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -9,6 +9,9 @@ import java.util.Objects;
 @Entity
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString(exclude = "restaurant")
 public class Item {
 
     @Id
@@ -23,6 +26,7 @@ public class Item {
     private Double price;
 
     @ManyToOne(optional = false)
+    @JsonBackReference
     private Restaurant restaurant;
 
     @Override
@@ -30,11 +34,11 @@ public class Item {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Item item = (Item) o;
-        return id.equals(item.id) && restaurant.equals(item.restaurant);
+        return Objects.equals(name, item.name) && Objects.equals(restaurant, item.restaurant);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, restaurant);
+        return Objects.hash(name, restaurant);
     }
 }

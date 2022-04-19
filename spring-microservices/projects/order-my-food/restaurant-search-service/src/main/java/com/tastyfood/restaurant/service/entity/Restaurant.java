@@ -1,8 +1,10 @@
 package com.tastyfood.restaurant.service.entity;
 
 import com.tastyfood.restaurant.service.constants.Cuisine;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -11,6 +13,8 @@ import java.util.Set;
 @Entity
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Restaurant {
 
     @Id
@@ -36,7 +40,7 @@ public class Restaurant {
     @Embedded
     private Address address;
 
-    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
     Set<Item> menu;
 
     @Override
@@ -51,5 +55,4 @@ public class Restaurant {
     public int hashCode() {
         return Objects.hash(id);
     }
-
 }

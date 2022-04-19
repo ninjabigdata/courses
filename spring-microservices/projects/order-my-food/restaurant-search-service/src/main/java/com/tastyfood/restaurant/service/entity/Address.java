@@ -1,7 +1,9 @@
 package com.tastyfood.restaurant.service.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -9,6 +11,8 @@ import javax.persistence.Embeddable;
 @Embeddable
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Address {
 
     @Column(name = "address_first_line", nullable = false)
