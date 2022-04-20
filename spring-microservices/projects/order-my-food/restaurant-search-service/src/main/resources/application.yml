@@ -44,5 +44,5 @@ logging:
     com:
       tastyfood:
         resturant:
-          service: INFO
+          service: DEBUG
 

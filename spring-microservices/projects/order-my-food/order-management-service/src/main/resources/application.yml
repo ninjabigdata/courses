@@ -25,4 +25,4 @@ logging:
     com:
       tastyfood:
         order:
-          service: INFO
+          service: DEBUG
