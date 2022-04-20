@@ -22,8 +22,8 @@ public class RestaurantController {
         ResponseDTO.ResponseDTOBuilder responseDTO = ResponseDTO.builder();
         if (Objects.isNull(restaurantSearchDTO)
                 || (
-                        StringUtils.hasText(restaurantSearchDTO.getLocation())
-                                && StringUtils.hasText(restaurantSearchDTO.getName())
+                        !StringUtils.hasText(restaurantSearchDTO.getLocation())
+                                && !StringUtils.hasText(restaurantSearchDTO.getName())
                                 && Objects.isNull(restaurantSearchDTO.getCuisine())
                                 && Objects.isNull(restaurantSearchDTO.getBudget())
                                 && Objects.isNull(restaurantSearchDTO.getDistance()))) {
@@ -46,8 +46,8 @@ public class RestaurantController {
         return responseDTO.build();
     }
 
-    @GetMapping("{restaurantId}/menu")
-    public ResponseDTO getMenu(@PathVariable("restaurantId") Long restaurantId) {
+    @GetMapping({"{restaurantId}/menu", "menu"})
+    public ResponseDTO getMenu(@PathVariable(value = "restaurantId", required = false) Long restaurantId) {
         ResponseDTO.ResponseDTOBuilder response = ResponseDTO.builder();
 
         if (Objects.isNull(restaurantId)) {
