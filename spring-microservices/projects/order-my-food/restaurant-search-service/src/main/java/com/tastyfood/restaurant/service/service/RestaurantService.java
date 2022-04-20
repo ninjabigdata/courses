@@ -5,7 +5,6 @@ import com.tastyfood.restaurant.service.dto.ItemDTO;
 import com.tastyfood.restaurant.service.dto.RestaurantDTO;
 import com.tastyfood.restaurant.service.dto.RestaurantSearchDTO;
 import com.tastyfood.restaurant.service.entity.QRestaurant;
-import com.tastyfood.restaurant.service.entity.Restaurant;
 import com.tastyfood.restaurant.service.mappers.ItemMapper;
 import com.tastyfood.restaurant.service.mappers.RestaurantMapper;
 import com.tastyfood.restaurant.service.repository.ItemRepository;
@@ -15,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;

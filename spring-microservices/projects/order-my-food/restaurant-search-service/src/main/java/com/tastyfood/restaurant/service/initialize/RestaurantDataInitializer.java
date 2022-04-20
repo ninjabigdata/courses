@@ -12,6 +12,7 @@ import com.tastyfood.restaurant.service.repository.ItemRepository;
 import com.tastyfood.restaurant.service.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
+@Profile("!test")
 public class RestaurantDataInitializer implements CommandLineRunner {
 
     private final RestaurantRepository restaurantRepository;
