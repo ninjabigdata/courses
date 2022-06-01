@@ -18,10 +18,17 @@ public class Inventory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "quantity_available")
     private Integer quantityAvailable;
 
+    @Column(nullable = false, name = "quantity_blocked_for_payment")
+    private Integer quantityBlockedForPayment;
+
+    @Column(nullable = false, name = "quantity_blocked_for_delivery")
+    private Integer quantityBlockedForDelivery;
+
     @OneToOne(optional = false)
+    @JoinColumn(name = "item_id", nullable = false, updatable = false)
     private Item item;
 
 }

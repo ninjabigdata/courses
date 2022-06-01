@@ -1,7 +1,11 @@
 package com.tastyfood.restaurant.service.dto;
 
-public enum ResponseCode {
+import java.io.Serializable;
 
-    SUCCESS, ERROR
+public enum ResponseCode implements Serializable {
+
+    SUCCESS, ERROR;
+
+    private static final long serialVersionUID = 1L;
 
 }

@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 @Component
@@ -119,11 +120,14 @@ public class RestaurantDataInitializer implements CommandLineRunner {
 
     private Set<Inventory> buildInventory(Set<Item> items) {
         ImmutableSet.Builder<Inventory> inventories = ImmutableSet.builder();
+        Random random = new Random();
 
         items.forEach(item -> inventories.add(
                 Inventory.builder()
                     .item(item)
-                    .quantityAvailable(0)
+                        .quantityAvailable(2 + random.nextInt(10))
+                        .quantityBlockedForDelivery(0)
+                        .quantityBlockedForPayment(0)
                     .build())
         );
 

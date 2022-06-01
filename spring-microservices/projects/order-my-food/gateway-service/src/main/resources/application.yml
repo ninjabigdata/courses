@@ -7,9 +7,20 @@ spring:
         locator:
           enabled: true
           lowerCaseServiceId: true
+      httpclient:
+        pool:
+          max-idle-time: 10000
+          max-connections: 50
+        wiretap: true
+        connect-timeout: 1000
+        response-timeout: 5s
+      httpserver:
+        wiretap: true
 
 server:
   port: 8900
+  tomcat:
+    connection-timeout: 20000
 
 management:
   endpoints:
@@ -23,3 +34,12 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
+
+logging:
+  level:
+    reactor:
+      netty: INFO
+    org:
+      springframework:
+        cloud:
+          gateway: INFO

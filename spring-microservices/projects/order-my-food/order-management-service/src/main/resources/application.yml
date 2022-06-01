@@ -3,6 +3,32 @@ spring:
     name: 'order-management-service'
   zipkin:
     base-url: http://127.0.0.1:9411/
+  sleuth:
+    sampler:
+      percentage: 1.0
+  activemq:
+    in-memory: true
+    pool:
+      enabled: false
+  #DB Configuration
+  datasource:
+    url: 'jdbc:h2:mem:orderDB;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false'
+    driverClassName: 'org.h2.Driver'
+    username: sa
+    password: password
+  # Hibernate additional native properties to set on the JPA provider.
+  jpa:
+    properties:
+      hibernate:
+        dialect: 'org.hibernate.dialect.H2Dialect'
+        format_sql: true
+  # H2 Web Console (H2ConsoleProperties)
+  # Whether to enable the console.
+  h2:
+    console:
+      enabled: true
+      # Path at which the console is available.
+      path: '/h2-console'
 
 server:
   port: 9100
@@ -26,3 +52,16 @@ logging:
       tastyfood:
         order:
           service: DEBUG
+
+resiliance4j:
+  circuitbreaker:
+    instances:
+      restaurantService:
+        failureRateThreshold: 70
+        slowCallRateThreshold: 70
+        slowCallDurationThreshold: 5
+        permittedNumberOfCallsInHalfOpenState: 10
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 100
+        minimumNumberOfCalls: 10
+        waitDurationInOpenState: 5
