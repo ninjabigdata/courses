@@ -3,9 +3,10 @@ package com.spring.reactive.repo;
 import com.spring.reactive.domain.Person;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
 
 class PersonRepositoryImplTest {
 
@@ -41,6 +42,28 @@ class PersonRepositoryImplTest {
     }
 
     @Test
-    void findAll() {
+    void findAllFluxBlockFirst() {
+        Flux<Person> personFlux = personRepository.findAll();
+
+        Person person = personFlux.blockFirst();
+
+        System.out.println(person);
     }
+
+    @Test
+    void findAllFluxSubscribe() {
+        Flux<Person> personFlux = personRepository.findAll();
+
+        personFlux.subscribe(System.out :: println);
+    }
+
+    @Test
+    void findAllFluxToMonoList() {
+        Flux<Person> personFlux = personRepository.findAll();
+
+        Mono<List<Person>> personsMono = personFlux.collectList();
+
+        personsMono.subscribe(list -> list.forEach(System.out :: println));
+    }
+
 }
