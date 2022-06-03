@@ -66,4 +66,34 @@ class PersonRepositoryImplTest {
         personsMono.subscribe(list -> list.forEach(System.out :: println));
     }
 
+    @Test
+    void findAllPersonById() {
+        Flux<Person> personFlux = personRepository.findAll();
+
+        Mono<Person> personMono = personFlux.filter(person -> person.getId() == 3).next();
+
+        personMono.subscribe(System.out :: println);
+    }
+
+    @Test
+    void findAllPersonByIdNotFound() {
+        Flux<Person> personFlux = personRepository.findAll();
+
+        Mono<Person> personMono = personFlux.filter(person -> person.getId() == 5).next();
+
+        personMono.subscribe(System.out :: println);
+    }
+
+    @Test
+    void findAllPersonByIdNotFoundWithException() {
+        Flux<Person> personFlux = personRepository.findAll();
+
+        Mono<Person> personMono = personFlux.filter(person -> person.getId() == 5).single();
+
+        personMono
+                .doOnError(throwable -> System.out.println("Error"))
+                .onErrorReturn(Person.builder().build())
+                .subscribe(System.out :: println);
+    }
+
 }
