@@ -1,6 +1,7 @@
 package com.spring.reactive.repo;
 
 import com.spring.reactive.domain.Person;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
@@ -94,6 +95,24 @@ class PersonRepositoryImplTest {
                 .doOnError(throwable -> System.out.println("Error"))
                 .onErrorReturn(Person.builder().build())
                 .subscribe(System.out :: println);
+    }
+
+    @Test
+    void getByIdSuccess() {
+        Mono<Person> personMono = personRepository.getById(1);
+
+        Person person = personMono.block();
+
+        Assertions.assertEquals(1, person.getId());
+    }
+
+    @Test
+    void getByIdFail() {
+        Mono<Person> personMono = personRepository.getById(100);
+
+        Person person = personMono.block();
+
+        Assertions.assertNull(person);
     }
 
 }
