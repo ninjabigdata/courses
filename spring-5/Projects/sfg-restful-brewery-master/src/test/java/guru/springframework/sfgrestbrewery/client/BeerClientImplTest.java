@@ -12,6 +12,8 @@ import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -194,6 +196,29 @@ class BeerClientImplTest {
 
             assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
         });
+    }
+
+    @Test
+    void functionTestGetBeerById() throws InterruptedException {
+        AtomicReference<String> beerName = new AtomicReference<>();
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+
+        beerClient.listBeers(null, null, null,
+                null, null)
+                .map(beerPagedList -> beerPagedList.getContent().get(0).getId())
+                .map(beerId -> beerClient.getBeerById(beerId, false))
+                .flatMap(mono -> mono)
+                .subscribe(beerDto -> {
+                    System.out.println(beerDto.getBeerName());
+
+                    beerName.set(beerDto.getBeerName());
+
+                    countDownLatch.countDown();
+                });
+
+        countDownLatch.await();
+
+        assertNotNull(beerName.get());
     }
 
 }
