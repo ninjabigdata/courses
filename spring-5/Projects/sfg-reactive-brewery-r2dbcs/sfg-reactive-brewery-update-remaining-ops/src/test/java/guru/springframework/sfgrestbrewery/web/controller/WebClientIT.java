@@ -5,11 +5,13 @@ import guru.springframework.sfgrestbrewery.web.model.BeerPagedList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.netty.http.client.HttpClient;
@@ -20,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 import static guru.springframework.sfgrestbrewery.bootstrap.BeerLoader.BEER_1_UPC;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Created by jt on 3/7/21.
@@ -54,7 +57,7 @@ public class WebClientIT {
             countDownLatch.countDown();
         });
 
-        countDownLatch.await(1000, TimeUnit.MILLISECONDS);
+        assertTrue(countDownLatch.await(1000, TimeUnit.MILLISECONDS));
         assertThat(countDownLatch.getCount()).isEqualTo(0);
     }
 
@@ -73,7 +76,7 @@ public class WebClientIT {
             countDownLatch.countDown();
         });
 
-        countDownLatch.await(1000, TimeUnit.MILLISECONDS);
+        assertTrue(countDownLatch.await(1000, TimeUnit.MILLISECONDS));
         assertThat(countDownLatch.getCount()).isEqualTo(0);
     }
 
@@ -86,9 +89,6 @@ public class WebClientIT {
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve().bodyToMono(BeerPagedList.class);
 
-
-//        BeerPagedList pagedList = beerPagedListMono.block();
-//        pagedList.getContent().forEach(beerDto -> System.out.println(beerDto.toString()));
         beerPagedListMono.publishOn(Schedulers.parallel()).subscribe(beerPagedList -> {
 
             beerPagedList.getContent().forEach(beerDto -> System.out.println(beerDto.toString()));
@@ -96,7 +96,7 @@ public class WebClientIT {
             countDownLatch.countDown();
         });
 
-        countDownLatch.await(1000, TimeUnit.MILLISECONDS);
+        assertTrue(countDownLatch.await(1000, TimeUnit.MILLISECONDS));
     }
 
     @Test
@@ -107,7 +107,7 @@ public class WebClientIT {
                 .beerName("JTs Beer")
                 .upc("123456")
                 .beerStyle("PALE_ALE")
-                .price(new BigDecimal(8.99))
+                .price(new BigDecimal("8.99"))
                 .build();
 
         Mono<ResponseEntity<Void>> beerResponseMono = webClient.post()
@@ -118,7 +118,7 @@ public class WebClientIT {
                 .toBodilessEntity();
 
         beerResponseMono.publishOn(Schedulers.parallel()).subscribe(responseEntity -> {
-            assertThat(responseEntity.getStatusCode().is2xxSuccessful());
+            assertThat(responseEntity.getStatusCode().is2xxSuccessful()).isTrue();
 
             countDownLatch.countDown();
         });
@@ -132,7 +132,7 @@ public class WebClientIT {
         CountDownLatch countDownLatch = new CountDownLatch(1);
 
         BeerDto beerDto = BeerDto.builder()
-                .price(new BigDecimal(8.99))
+                .price(new BigDecimal("8.99"))
                 .build();
 
         Mono<ResponseEntity<Void>> beerResponseMono = webClient.post()
@@ -142,11 +142,86 @@ public class WebClientIT {
                 .retrieve()
                 .toBodilessEntity();
 
-        beerResponseMono.publishOn(Schedulers.parallel()).doOnError(throwable -> {
-            countDownLatch.countDown();
-        }).subscribe(responseEntity -> {
+        beerResponseMono.publishOn(Schedulers.parallel()).doOnError(throwable -> countDownLatch.countDown())
+                .subscribe(responseEntity -> {
 
-        });
+                });
+
+        assertTrue(countDownLatch.await(1000, TimeUnit.MILLISECONDS));
+        assertThat(countDownLatch.getCount()).isEqualTo(0);
+    }
+
+
+    @Test
+    void testUpdateBeer() throws InterruptedException {
+
+        CountDownLatch countDownLatch = new CountDownLatch(3);
+
+        webClient.get().uri("/api/v1/beer")
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(BeerPagedList.class)
+                .publishOn(Schedulers.single())
+                .subscribe(pagedList -> {
+                    countDownLatch.countDown();
+
+                    //get existing beer
+                    BeerDto beerDto = pagedList.getContent().get(0);
+
+                    BeerDto updatePayload = BeerDto.builder().beerName("JTsUpdate")
+                            .beerStyle(beerDto.getBeerStyle())
+                            .upc(beerDto.getUpc())
+                            .price(beerDto.getPrice())
+                            .build();
+
+                    //update existing beer
+                    webClient.put().uri("/api/v1/beer/" + beerDto.getId() )
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .body(BodyInserters.fromValue(updatePayload))
+                            .retrieve().toBodilessEntity()
+                            .flatMap(responseEntity -> {
+                                //get and verify update
+                                countDownLatch.countDown();
+                                return webClient.get().uri("/api/v1/beer/" + beerDto.getId())
+                                        .accept(MediaType.APPLICATION_JSON)
+                                        .retrieve().bodyToMono(BeerDto.class);
+                            }) .subscribe(savedDto -> {
+                                assertThat(savedDto.getBeerName()).isEqualTo("JTsUpdate");
+                                countDownLatch.countDown();
+                            });
+                });
+
+        countDownLatch.await(1000, TimeUnit.MILLISECONDS);
+        assertThat(countDownLatch.getCount()).isEqualTo(0);
+    }
+
+    @Test
+    void testUpdateBeerNotFound() throws InterruptedException {
+
+        CountDownLatch countDownLatch = new CountDownLatch(2);
+
+        BeerDto updatePayload = BeerDto.builder().beerName("JTsUpdate")
+                .beerStyle("PALE_ALE")
+                .upc("12345667")
+                .price(new BigDecimal("9.99"))
+                .build();
+
+        webClient.put().uri("/api/v1/beer/" + 200 )
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(updatePayload))
+                .retrieve().toBodilessEntity()
+                .subscribe(responseEntity -> {
+                }, throwable -> {
+                    if (throwable.getClass().getName().equals("org.springframework.web.reactive.function.client.WebClientResponseException$NotFound")){
+                        WebClientResponseException ex = (WebClientResponseException) throwable;
+
+                        if (ex.getStatusCode().equals(HttpStatus.NOT_FOUND)){
+                            countDownLatch.countDown();
+                        }
+                    }
+                });
+
+        countDownLatch.countDown();
 
         countDownLatch.await(1000, TimeUnit.MILLISECONDS);
         assertThat(countDownLatch.getCount()).isEqualTo(0);

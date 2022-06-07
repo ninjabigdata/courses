@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import reactor.core.publisher.Mono;
 
+import java.util.Objects;
+
 import static org.springframework.data.relational.core.query.Criteria.where;
 import static org.springframework.data.relational.core.query.Query.empty;
 import static org.springframework.data.relational.core.query.Query.query;
@@ -80,6 +82,7 @@ public class BeerServiceImpl implements BeerService {
     @Override
     public Mono<BeerDto> updateBeer(Integer beerId, BeerDto beerDto) {
         return beerRepository.findById(beerId)
+                .defaultIfEmpty(Beer.builder().build())
                 .map(beer -> {
                     beer.setBeerName(beerDto.getBeerName());
                     beer.setBeerStyle(BeerStyleEnum.valueOf(beerDto.getBeerStyle()));
@@ -88,7 +91,13 @@ public class BeerServiceImpl implements BeerService {
 
                     return beer;
                 })
-                .flatMap(beerRepository::save)
+                .flatMap(updatedBeer -> {
+                    if (updatedBeer.getId() != null) {
+                        return beerRepository.save(updatedBeer);
+                    }
+
+                    return Mono.just(updatedBeer);
+                })
                 .map(beerMapper::beerToBeerDto);
     }
 
