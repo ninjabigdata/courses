@@ -16,8 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import reactor.core.publisher.Mono;
 
-import java.util.UUID;
-
 import static org.springframework.data.relational.core.query.Criteria.where;
 import static org.springframework.data.relational.core.query.Query.empty;
 import static org.springframework.data.relational.core.query.Query.query;
@@ -80,17 +78,18 @@ public class BeerServiceImpl implements BeerService {
     }
 
     @Override
-    public BeerDto updateBeer(UUID beerId, BeerDto beerDto) {
-        /*Beer beer = beerRepository.findById(beerId).blockOptional().orElseThrow(NotFoundException::new);
+    public Mono<BeerDto> updateBeer(Integer beerId, BeerDto beerDto) {
+        return beerRepository.findById(beerId)
+                .map(beer -> {
+                    beer.setBeerName(beerDto.getBeerName());
+                    beer.setBeerStyle(BeerStyleEnum.valueOf(beerDto.getBeerStyle()));
+                    beer.setPrice(beerDto.getPrice());
+                    beer.setUpc(beerDto.getUpc());
 
-        beer.setBeerName(beerDto.getBeerName());
-        beer.setBeerStyle(BeerStyleEnum.PILSNER.valueOf(beerDto.getBeerStyle()));
-        beer.setPrice(beerDto.getPrice());
-        beer.setUpc(beerDto.getUpc());
-
-        return beerMapper.beerToBeerDto(beerRepository.save(beer).block());*/
-
-        return null;
+                    return beer;
+                })
+                .flatMap(beerRepository::save)
+                .map(beerMapper::beerToBeerDto);
     }
 
     @Cacheable(cacheNames = "beerUpcCache")
