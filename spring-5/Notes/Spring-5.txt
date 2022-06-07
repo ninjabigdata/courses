@@ -70,9 +70,46 @@ Reactive Streams API
 	Spring Reactive Types
 		Mono
 			A publisher with 0/1 elements in data stream
+			
+			Operations:
+				Block
+					Blocks until response is recived
+					
+				Subscribe
+					Subscribes to a consumer of this Mono
+					
+				Map
+					Transform the item emiited by the Mono. This must sequenced with subscribe to execute the map function
 		
 		Flux
 			A publisher with 0/many elements in data stream
+			
+			Operations:
+				BlockFirst
+					Blocks until first object is received from Flux
+				
+				Subscribe
+					Subscribes to a consumer of this Flux
+					
+				
+				Flux to Mono List
+					Converts the Flux to list of Mono
+					Then use MOno operations to consume the response
+				
+				Filter
+					To filter the response based on Predicate and returns the Mono
+					Returns empty Mono, if no match
+					
+				Filter with Exception
+					Use single
+					
+					To log the error, use doOnError
+					
+					To perform some operation on error, use onErrorReturn
+					
+		Testing the Mono / Flux Objects
+			StepVerifier
+				
 			
 	
 	

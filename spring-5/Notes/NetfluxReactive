@@ -1,2 +1,39 @@
 Netflux Reactive Example
+	Stream Events using Flux generate
 	
+
+Functional Programming
+	Imperative Programming - Programming paradigm that uses statements to change a program's state
+	
+	Funtional Programming - Programming paradigm - a style of building the structure and elements of computer programs - that treats computation as the evaluation of mathematical functions and avoids changing-state and mutable data
+	
+	Imperative										Declarative
+	How to do it									What to do
+	Mutable											Immutable (transforms)
+	Has side effects								No side effects
+	Pass objects									Can also pass functions
+	Hard to compose									Functional composition
+	Not threadsafe									Threadsafe
+	
+	
+	RestTemplate									WebClient
+	Blocking										Async and non-blocking
+	Based on Java Servlet API						Based on Spring reactive framework
+	Used one thread per request						Requests are queued and processed when available
+													Uses Mono and Flux type
+														Allows for functional / declarative programming
+	
+	
+
+Spring WebFlux
+	For non-blocking, reactive web-services
+	
+	WebFluxTest
+		To test the controllers in WebFlux
+		
+		Add the annotation
+			@WebFluxTest(<controllerClassName>.class)
+		Autowire
+			WebTestClient
+
+
