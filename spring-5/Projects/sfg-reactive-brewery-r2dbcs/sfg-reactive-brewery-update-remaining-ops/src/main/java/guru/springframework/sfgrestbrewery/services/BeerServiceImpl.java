@@ -2,7 +2,6 @@ package guru.springframework.sfgrestbrewery.services;
 
 import guru.springframework.sfgrestbrewery.domain.Beer;
 import guru.springframework.sfgrestbrewery.repositories.BeerRepository;
-import guru.springframework.sfgrestbrewery.web.controller.NotFoundException;
 import guru.springframework.sfgrestbrewery.web.mappers.BeerMapper;
 import guru.springframework.sfgrestbrewery.web.model.BeerDto;
 import guru.springframework.sfgrestbrewery.web.model.BeerPagedList;
@@ -13,11 +12,9 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
+import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * Created by jt on 2019-04-20.
@@ -79,18 +76,12 @@ public class BeerServiceImpl implements BeerService {
 
     @Cacheable(cacheNames = "beerCache", key = "#beerId", condition = "#showInventoryOnHand == false ")
     @Override
-    public BeerDto getById(UUID beerId, Boolean showInventoryOnHand) {
-        /*if (showInventoryOnHand) {
-            return beerMapper.beerToBeerDtoWithInventory(
-                    beerRepository.findById(beerId).blockOptional().orElseThrow(NotFoundException::new)
-            );
+    public Mono<BeerDto> getById(Integer beerId, Boolean showInventoryOnHand) {
+        if (showInventoryOnHand) {
+            return beerRepository.findById(beerId).map(beerMapper::beerToBeerDtoWithInventory);
         } else {
-            return beerMapper.beerToBeerDto(
-                    beerRepository.findById(beerId).blockOptional().orElseThrow(NotFoundException::new)
-            );
-        }*/
-
-        return null;
+            return beerRepository.findById(beerId).map(beerMapper::beerToBeerDto);
+        }
     }
 
     @Override
@@ -116,16 +107,12 @@ public class BeerServiceImpl implements BeerService {
 
     @Cacheable(cacheNames = "beerUpcCache")
     @Override
-    public BeerDto getByUpc(String upc) {
-        //return beerMapper.beerToBeerDto(beerRepository.findByUpc(upc));
-
-        return null;
+    public Mono<BeerDto> getByUpc(String upc) {
+        return beerRepository.findByUpc(upc).map(beerMapper::beerToBeerDto);
     }
 
     @Override
-    public void deleteBeerById(UUID beerId) {
-        //beerRepository.deleteById(beerId);
-
-        return ;
+    public void deleteBeerById(Integer beerId) {
+        beerRepository.deleteById(beerId);
     }
 }

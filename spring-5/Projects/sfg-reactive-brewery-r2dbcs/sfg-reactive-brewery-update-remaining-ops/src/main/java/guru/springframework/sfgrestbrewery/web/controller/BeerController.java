@@ -52,18 +52,18 @@ public class BeerController {
     }
 
     @GetMapping("beer/{beerId}")
-    public ResponseEntity<Mono<BeerDto>> getBeerById(@PathVariable("beerId") UUID beerId,
+    public ResponseEntity<Mono<BeerDto>> getBeerById(@PathVariable("beerId") Integer beerId,
                                                     @RequestParam(value = "showInventoryOnHand", required = false) Boolean showInventoryOnHand){
         if (showInventoryOnHand == null) {
             showInventoryOnHand = false;
         }
 
-        return ResponseEntity.ok(Mono.just(beerService.getById(beerId, showInventoryOnHand)));
+        return ResponseEntity.ok(beerService.getById(beerId, showInventoryOnHand));
     }
 
     @GetMapping("beerUpc/{upc}")
     public ResponseEntity<Mono<BeerDto>> getBeerByUpc(@PathVariable("upc") String upc){
-        return ResponseEntity.ok(Mono.just(beerService.getByUpc(upc)));
+        return ResponseEntity.ok(beerService.getByUpc(upc));
     }
 
     @PostMapping(path = "beer")
@@ -84,7 +84,7 @@ public class BeerController {
     }
 
     @DeleteMapping("beer/{beerId}")
-    public ResponseEntity<Void> deleteBeerById(@PathVariable("beerId") UUID beerId){
+    public ResponseEntity<Void> deleteBeerById(@PathVariable("beerId") Integer beerId){
 
         beerService.deleteBeerById(beerId);
 
