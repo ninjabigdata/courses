@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -45,7 +46,8 @@ public class BeerServiceImpl implements BeerService {
             //search beer_service style
             beerPage = beerRepository.findAllByBeerStyle(beerStyle, pageRequest);
         } else {
-            beerPage = beerRepository.findAll(pageRequest);
+            beerPage = null;
+            // beerPage = beerRepository.findAll(pageRequest);
         }
 
         if (showInventoryOnHand){
@@ -78,30 +80,30 @@ public class BeerServiceImpl implements BeerService {
     public BeerDto getById(UUID beerId, Boolean showInventoryOnHand) {
         if (showInventoryOnHand) {
             return beerMapper.beerToBeerDtoWithInventory(
-                    beerRepository.findById(beerId).orElseThrow(NotFoundException::new)
+                    beerRepository.findById(beerId).blockOptional().orElseThrow(NotFoundException::new)
             );
         } else {
             return beerMapper.beerToBeerDto(
-                    beerRepository.findById(beerId).orElseThrow(NotFoundException::new)
+                    beerRepository.findById(beerId).blockOptional().orElseThrow(NotFoundException::new)
             );
         }
     }
 
     @Override
     public BeerDto saveNewBeer(BeerDto beerDto) {
-        return beerMapper.beerToBeerDto(beerRepository.save(beerMapper.beerDtoToBeer(beerDto)));
+        return beerMapper.beerToBeerDto(beerRepository.save(beerMapper.beerDtoToBeer(beerDto)).block());
     }
 
     @Override
     public BeerDto updateBeer(UUID beerId, BeerDto beerDto) {
-        Beer beer = beerRepository.findById(beerId).orElseThrow(NotFoundException::new);
+        Beer beer = beerRepository.findById(beerId).blockOptional().orElseThrow(NotFoundException::new);
 
         beer.setBeerName(beerDto.getBeerName());
         beer.setBeerStyle(BeerStyleEnum.PILSNER.valueOf(beerDto.getBeerStyle()));
         beer.setPrice(beerDto.getPrice());
         beer.setUpc(beerDto.getUpc());
 
-        return beerMapper.beerToBeerDto(beerRepository.save(beer));
+        return beerMapper.beerToBeerDto(beerRepository.save(beer).block());
     }
 
     @Cacheable(cacheNames = "beerUpcCache")
