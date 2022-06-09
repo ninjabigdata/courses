@@ -21,6 +21,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static guru.springframework.sfgrestbrewery.bootstrap.BeerLoader.BEER_1_UPC;
+import static guru.springframework.sfgrestbrewery.bootstrap.BeerLoader.BEER_30_UPC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -65,7 +66,7 @@ public class WebClientIT {
     void getBeerByUpc() throws InterruptedException {
         CountDownLatch countDownLatch = new CountDownLatch(1);
 
-        Mono<BeerDto> beerDtoMono = webClient.get().uri("api/v1/beerUpc/".concat(BEER_1_UPC))
+        Mono<BeerDto> beerDtoMono = webClient.get().uri("api/v1/beerUpc/".concat(BEER_30_UPC))
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve().bodyToMono(BeerDto.class);
 
@@ -76,7 +77,7 @@ public class WebClientIT {
             countDownLatch.countDown();
         });
 
-        assertTrue(countDownLatch.await(1000, TimeUnit.MILLISECONDS));
+        countDownLatch.await(1000, TimeUnit.MILLISECONDS);
         assertThat(countDownLatch.getCount()).isEqualTo(0);
     }
 
@@ -222,6 +223,40 @@ public class WebClientIT {
                 });
 
         countDownLatch.countDown();
+
+        countDownLatch.await(1000, TimeUnit.MILLISECONDS);
+        assertThat(countDownLatch.getCount()).isEqualTo(0);
+    }
+
+    @Test
+    void testDeleteBeer() throws InterruptedException {
+
+        CountDownLatch countDownLatch = new CountDownLatch(3);
+
+        webClient.get().uri("/api/v1/beer")
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(BeerPagedList.class)
+                .publishOn(Schedulers.single())
+                .subscribe(pagedList -> {
+                    countDownLatch.countDown();
+
+                    BeerDto beerDto = pagedList.getContent().get(0);
+
+                    webClient.delete().uri("/api/v1/beer/" + beerDto.getId() )
+                            .retrieve().toBodilessEntity()
+                            .flatMap(responseEntity -> {
+                                countDownLatch.countDown();
+
+                                return webClient.get().uri("/api/v1/beer/" + beerDto.getId())
+                                        .accept(MediaType.APPLICATION_JSON)
+                                        .retrieve().bodyToMono(BeerDto.class);
+                            }) .subscribe(savedDto -> {
+
+                            }, throwable -> {
+                                countDownLatch.countDown();
+                            });
+                });
 
         countDownLatch.await(1000, TimeUnit.MILLISECONDS);
         assertThat(countDownLatch.getCount()).isEqualTo(0);

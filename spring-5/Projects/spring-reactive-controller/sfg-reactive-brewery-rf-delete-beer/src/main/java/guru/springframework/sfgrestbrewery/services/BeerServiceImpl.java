@@ -2,7 +2,6 @@ package guru.springframework.sfgrestbrewery.services;
 
 import guru.springframework.sfgrestbrewery.domain.Beer;
 import guru.springframework.sfgrestbrewery.repositories.BeerRepository;
-import guru.springframework.sfgrestbrewery.web.controller.NotFoundException;
 import guru.springframework.sfgrestbrewery.web.mappers.BeerMapper;
 import guru.springframework.sfgrestbrewery.web.model.BeerDto;
 import guru.springframework.sfgrestbrewery.web.model.BeerPagedList;
@@ -13,13 +12,11 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.data.relational.core.query.Query;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import reactor.core.publisher.Mono;
 
-import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static org.springframework.data.relational.core.query.Criteria.where;
 import static org.springframework.data.relational.core.query.Query.empty;
@@ -32,7 +29,6 @@ import static org.springframework.data.relational.core.query.Query.query;
 @Service
 @RequiredArgsConstructor
 public class BeerServiceImpl implements BeerService {
-
     private final BeerRepository beerRepository;
     private final BeerMapper beerMapper;
     private final R2dbcEntityTemplate template;
@@ -53,16 +49,19 @@ public class BeerServiceImpl implements BeerService {
             query = query(where("beerStyle").is(beerStyle));
         } else {
             query = empty();
-            // beerPage = beerRepository.findAll(pageRequest);
         }
 
         return template.select(Beer.class)
                 .matching(query.with(pageRequest))
                 .all()
                 .map(beerMapper::beerToBeerDto)
-                .collectList()
-                .map(beers -> new BeerPagedList(beers, PageRequest.of(pageRequest.getPageNumber(), pageRequest.getPageSize()),
-                        beers.size()));
+                .collect(Collectors.toList())
+                .map(beers -> {
+                    return new BeerPagedList(beers, PageRequest.of(
+                            pageRequest.getPageNumber(),
+                            pageRequest.getPageSize()),
+                            beers.size());
+                });
     }
 
     @Cacheable(cacheNames = "beerCache", key = "#beerId", condition = "#showInventoryOnHand == false ")
@@ -77,8 +76,6 @@ public class BeerServiceImpl implements BeerService {
 
     @Override
     public Mono<BeerDto> saveNewBeer(BeerDto beerDto) {
-        // return beerMapper.beerToBeerDto(beerRepository.save(beerMapper.beerDtoToBeer(beerDto)).block());
-
         return beerRepository.save(beerMapper.beerDtoToBeer(beerDto)).map(beerMapper::beerToBeerDto);
     }
 
@@ -91,10 +88,8 @@ public class BeerServiceImpl implements BeerService {
                     beer.setBeerStyle(BeerStyleEnum.valueOf(beerDto.getBeerStyle()));
                     beer.setPrice(beerDto.getPrice());
                     beer.setUpc(beerDto.getUpc());
-
                     return beer;
-                })
-                .flatMap(updatedBeer -> {
+                }).flatMap(updatedBeer -> {
                     if (updatedBeer.getId() != null) {
                         return beerRepository.save(updatedBeer);
                     }
@@ -115,9 +110,16 @@ public class BeerServiceImpl implements BeerService {
         beerRepository.deleteById(beerId).subscribe();
     }
 
-    @ExceptionHandler
-    public ResponseEntity<Void> handleNotFound(NotFoundException exception) {
-        return ResponseEntity.notFound().build();
-    }
+
+
+
 
 }
+
+
+
+
+
+
+
+

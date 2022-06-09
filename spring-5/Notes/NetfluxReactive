@@ -37,3 +37,10 @@ Spring WebFlux
 			WebTestClient
 
 
+R2DBC
+	https://docs.spring.io/spring-data/r2dbc/docs/1.2.6/reference/html/#get-started:first-steps:what
+	
+Functional Endpoints using Spring WebFlux
+	https://docs.spring.io/spring-framework/docs/current/reference/html/web-reactive.html#webflux-fn
+	
+	

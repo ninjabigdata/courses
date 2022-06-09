@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
-import java.util.Objects;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -49,9 +47,12 @@ public class BeerController {
             pageSize = DEFAULT_PAGE_SIZE;
         }
 
-        Mono<BeerPagedList> beerList = beerService.listBeers(beerName, beerStyle, PageRequest.of(pageNumber, pageSize), showInventoryOnHand);
+        return ResponseEntity.ok(beerService.listBeers(beerName, beerStyle, PageRequest.of(pageNumber, pageSize), showInventoryOnHand));
+    }
 
-        return ResponseEntity.ok(beerList);
+    @ExceptionHandler
+    ResponseEntity<Void> handleNotFound(NotFoundException ex){
+        return ResponseEntity.notFound().build();
     }
 
     @GetMapping("beer/{beerId}")
@@ -64,7 +65,7 @@ public class BeerController {
         return ResponseEntity.ok(beerService.getById(beerId, showInventoryOnHand)
                 .defaultIfEmpty(BeerDto.builder().build())
                 .doOnNext(beerDto -> {
-                    if (beerDto.getId() == null) {
+                    if (beerDto.getId() == null){
                         throw new NotFoundException();
                     }
                 }));
@@ -77,23 +78,27 @@ public class BeerController {
 
     @PostMapping(path = "beer")
     public ResponseEntity<Void> saveNewBeer(@RequestBody @Validated BeerDto beerDto){
-        AtomicInteger beerId = new AtomicInteger();
 
-        beerService.saveNewBeer(beerDto).subscribe(beer -> beerId.set(beer.getId()));
+        AtomicInteger atomicIntegerBeerId = new AtomicInteger();
+
+        beerService.saveNewBeer(beerDto).subscribe(savedBeerDto -> {
+            atomicIntegerBeerId.set(savedBeerDto.getId());
+        });
 
         return ResponseEntity
                 .created(UriComponentsBuilder
-                        .fromHttpUrl("http://api.springframework.guru/api/v1/beer/" + beerId.get())
+                        .fromHttpUrl("http://api.springframework.guru/api/v1/beer/" + atomicIntegerBeerId.get())
                         .build().toUri())
                 .build();
     }
 
     @PutMapping("beer/{beerId}")
-    public ResponseEntity<Void> updateBeerById(@PathVariable("beerId") Integer beerId,
-                                               @RequestBody @Validated BeerDto beerDto){
+    public ResponseEntity<Void> updateBeerById(@PathVariable("beerId") Integer beerId, @RequestBody @Validated BeerDto beerDto){
+
         AtomicBoolean atomicBoolean = new AtomicBoolean(false);
-        beerService.updateBeer(beerId, beerDto).subscribe(savedBeerDto -> {
-            if (savedBeerDto.getId() != null) {
+
+        beerService.updateBeer(beerId, beerDto).subscribe(savedDto -> {
+            if (savedDto.getId() != null) {
                 atomicBoolean.set(true);
             }
         });
@@ -112,7 +117,5 @@ public class BeerController {
 
         return ResponseEntity.ok().build();
     }
-
-
 
 }
