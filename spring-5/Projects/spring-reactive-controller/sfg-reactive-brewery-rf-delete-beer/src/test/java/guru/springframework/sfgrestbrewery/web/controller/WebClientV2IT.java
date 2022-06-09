@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class WebClientV2IT {
-    public static final String BASE_URL = "http://localhost:8080";
+    public static final String BASE_URL = "http://localhost:8090";
 
     WebClient webClient;
 
