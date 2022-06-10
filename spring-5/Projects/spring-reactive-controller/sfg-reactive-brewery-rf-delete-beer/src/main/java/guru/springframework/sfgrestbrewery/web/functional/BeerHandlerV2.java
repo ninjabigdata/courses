@@ -53,6 +53,12 @@ public class BeerHandlerV2 {
 
         return beerDtoMono.flatMap(beerDto -> beerService.updateBeer(beerId, beerDto))
                 .flatMap(savedBeerDto -> {
+
+                    if (savedBeerDto.getId() == null) {
+                        log.error("BeerId - {} is not found", beerId);
+
+                        return ServerResponse.notFound().build();
+                    }
                     log.info("updated beer is {}", savedBeerDto);
 
                     return ServerResponse.noContent().build();
