@@ -1,14 +1,14 @@
 package guru.springframework.rabbit.rabbitstockquoteservice.config;
 
 import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.Delivery;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.rabbitmq.RabbitFlux;
-import reactor.rabbitmq.Sender;
-import reactor.rabbitmq.SenderOptions;
+import reactor.rabbitmq.*;
 
 import javax.annotation.PreDestroy;
 
@@ -32,8 +32,18 @@ public class RabbitConfig {
     }
 
     @Bean
-    Sender sender(Mono<Connection> connectionMono) {
+    public Sender sender(Mono<Connection> connectionMono) {
         return RabbitFlux.createSender(new SenderOptions().connectionMono(connectionMono));
+    }
+
+    @Bean
+    public Receiver receiver(Mono<Connection> connectionMono) {
+        return RabbitFlux.createReceiver(new ReceiverOptions().connectionMono(connectionMono));
+    }
+
+    @Bean
+    public Flux<Delivery> deliveryFlux(Receiver receiver) {
+        return receiver.consumeAutoAck(QUEUE);
     }
 
 }
