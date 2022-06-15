@@ -44,3 +44,27 @@ Functional Endpoints using Spring WebFlux
 	https://docs.spring.io/spring-framework/docs/current/reference/html/web-reactive.html#webflux-fn
 	
 	
+Reactive MongoDB
+	MongoDB
+		NoSQL DB
+		Stores 'Documents' in JSON like format
+			Allows for complex objects
+		Can optionally use schema
+		Reactive non-blocking drivers are available
+		
+	Spring Data MongoDB
+		Provides data repository for MongoDB documents
+			Similar functionality as in Spring Data JPA
+			Allows reactive type repositories (optional)
+				This requires reactive driver
+		Spring Boot auto-configures a local MongoDB instance on port 27017
+	
+
+Reactive RabbitMQ
+	An open source message broker
+	Uses AMQP (Advanced Message Queuing Protocol) by default
+		Very fast and efficient
+		Written in Erlang, supported by Pivotal
+	Reactive RabbitMQ is reactive API for RabbitMQ
+	
+	
