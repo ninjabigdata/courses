@@ -1,0 +1,116 @@
+Reactive Manifesto
+	www.reactivemanifesto.org
+	
+	Reactive can improve computing efficiency
+	Immutable nature of Reactive apps can help with app quality
+	
+	Reactive Systems are
+		Responsive
+			System responses in a timely-manner
+			Responsiveness also means problems may be detected quickly and dealth with efficiency
+			Provide rapid and consistent response times
+			Consistency behavior simplifies error handling, builds end-users confidence and encourages further interactions
+			
+		Resilient
+			System stays responsive in the face of failure
+			Achieved by replication, containment, isolation and delegtion
+			Failures are contained within each component
+			Parts of the system can fail, without compromising system as a whole
+			Recovery of each component is delegated to another
+			HA is ensured by replication where necessary
+			
+		Message Driven
+			Reactive system rely on async message passing to establish boundary between components
+			This ensures loose coupling, isolation and location transparency
+			Msg passing enables load mgmt, elasticity and flow control
+			Location transparency msging makes mgmt of failures possible
+			Non-blocking communication allows recipients to only consume resources while active, leading to less system overhead
+			
+		Elastic
+			System stays responsive under varying loading
+			Reactive systems can react to changes in the input rate by +- resources allocated to service  inputs
+			Elasticity is achieved in a cost effiective way on commodity HW and SW platforms
+		
+	
+Reactive Prgmimg
+	Implementation technique
+	Focuses on non-blocking, async exec - key characteristic
+	One of the tools in building Reactive systems
+	Reactive Manifesto has wholistic view of the system where Reactive prgm is more granular at program level
+	
+	Async prgming paradigm focused on streams of data
+	
+	Common use-cases
+		Ext service calls
+		Highly concurrent msg consumers
+		Spreadsheets
+		Abstraction over Async process
+		Abstract whether or not your prgm is sync or async
+		
+	Features
+		Data streams
+		Async
+		non-blocking
+		backpressure
+		failures as messages
+		
+	
+Reactive Streams API
+	Goal is to create std for async stream processing with non-blocking back-pressure
+	A set of 4 interfaces which defines the API
+		Publisher
+			Publishes an event
+		Subscriber
+			Subscribes to the event
+		Subscription
+			Subscribing to event
+		Processor
+			Process the event
+			
+	Spring Reactive Types
+		Mono
+			A publisher with 0/1 elements in data stream
+			
+			Operations:
+				Block
+					Blocks until response is recived
+					
+				Subscribe
+					Subscribes to a consumer of this Mono
+					
+				Map
+					Transform the item emiited by the Mono. This must sequenced with subscribe to execute the map function
+		
+		Flux
+			A publisher with 0/many elements in data stream
+			
+			Operations:
+				BlockFirst
+					Blocks until first object is received from Flux
+				
+				Subscribe
+					Subscribes to a consumer of this Flux
+					
+				
+				Flux to Mono List
+					Converts the Flux to list of Mono
+					Then use MOno operations to consume the response
+				
+				Filter
+					To filter the response based on Predicate and returns the Mono
+					Returns empty Mono, if no match
+					
+				Filter with Exception
+					Use single
+					
+					To log the error, use doOnError
+					
+					To perform some operation on error, use onErrorReturn
+					
+		Testing the Mono / Flux Objects
+			StepVerifier
+				
+			
+	
+	
+	

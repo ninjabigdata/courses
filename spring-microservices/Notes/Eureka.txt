@@ -1,0 +1,67 @@
+Eureka
+	For Discovery Service
+	This was developed by Netflix and this one integrated with Spring framework
+	The technologies open-sourced by Netflix are:
+		Hysterix
+		Ribbon
+		Zuul
+	Spring boot / cloud abstracts these technologies
+	
+
+Creating Eureka-Server
+	Add the following dependency
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+		</dependency>
+	
+	Add the following dependency management
+		<dependencyManagement>
+			<dependencies>
+				<dependency>
+					<groupId>org.springframework.cloud</groupId>
+					<artifactId>spring-cloud-dependencies</artifactId>
+					<version>${spring-cloud.version}</version>
+					<type>pom</type>
+					<scope>import</scope>
+				</dependency>
+			</dependencies>
+		</dependencyManagement>
+	
+	Add the annotation, @EnableEurekaServer, to Spring Boot Application starter class
+	
+	To stop the server to register itself as client and registering with other servers, add the following properties
+		eureka.client.register-with-eureka=false
+		eureka.client.fetch-registry=false
+		
+	Caution:
+		For java 11, add the dependencies for JAXB. Eureka server requires those dependencies
+		
+Creating Eureka-Client
+	Add the following dependency
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+			<version>${spring.cloud.version}</version>
+		</dependency>
+	
+	Add the following property to application.properties to specify the service name
+		spring.application.name=<service-name>
+		
+	
+For invoking the REST APIs exposed by other microservices
+	Annotate the RestTemplate bean with @LoadBalanced
+		This annotation will resolve the micro-services using service name
+	
+	Use the target service-name in the URL to access the API
+		This target service name will be resolved by Eureka discovery service since RestTemplate is annotated with LoadBalanced
+		
+Load Balancing
+	This is taken care internally with the LoadBalanced annotation
+	
+	To get the list of services or instances, use org.springframework.cloud.client.discovery.DiscoveryClient instance
+	
+
+Fault-Tolerance
+	The Eureka-Server keeps pinging clients at regular intervals which is called heart-beats. If client does not respond for a certain time, it will be deregistered
+	If Eureka-Server goes down, the clients use the cached version of the eureka-server discovery and invoke the required services
