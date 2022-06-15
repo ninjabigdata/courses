@@ -1,12 +1,10 @@
 package guru.springframework.rabbit.rabbitstockquoteservice.config;
 
 import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.Delivery;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.rabbitmq.*;
 
@@ -39,11 +37,6 @@ public class RabbitConfig {
     @Bean
     public Receiver receiver(Mono<Connection> connectionMono) {
         return RabbitFlux.createReceiver(new ReceiverOptions().connectionMono(connectionMono));
-    }
-
-    @Bean
-    public Flux<Delivery> deliveryFlux(Receiver receiver) {
-        return receiver.consumeAutoAck(QUEUE);
     }
 
 }
