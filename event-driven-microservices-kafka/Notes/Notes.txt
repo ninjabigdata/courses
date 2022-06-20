@@ -1,0 +1,31 @@
+Patterns Used in Microservices
+	Externalized COnfig -> Spring Cloud Config
+	API Versioning
+	Service Discovery	-> Eureka
+	API Gateway			-> Spring Cloud Gateway
+	Circuit Breaker		-> Spring Cloud Gateway and Resillience4j
+	Rate-Limiting		-> Spring Cloud Gateway and Redis
+	Event Sourcing		-> Kafka
+	CQRS (Command Query Responsibility Segregation)						-> Kafka and Elasticsearch
+	Authentication and Authorization with OAuth 2.0 and Open Id Connect	-> Keycloak Authz Server
+	Monitoring			-> Spring Boot Actuator, Prometheus and Grafana
+	Distributed Tracing, Log Aggregation and Visualization				-> Spring Cloud Sleuth, Zipkin, Elasticsearch, Logstash and Kibana
+	
+	
+Kafka
+	Terminologies
+		Brokers
+		Topics
+		Partitions
+		Producer
+		Consumer
+		Spring Kafka
+		
+Elasticsearch
+	Open source search engine
+	Apache Lucene -> high performance full featured search engine
+	Organize your data and make it easily accessible
+	Easy RESTful API based on JSON
+	Easy scale
+	Type guessing, dynamic mapping and Lucene standard analyses
+	Query DSL for complex queries
