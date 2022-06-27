@@ -19,7 +19,7 @@
     <dependencies>
         <dependency>
             <groupId>com.microservices.demo</groupId>
-            <artifactId>app-module-data</artifactId>
+            <artifactId>app-config-data</artifactId>
         </dependency>
         <dependency>
             <groupId>com.microservices.demo</groupId>

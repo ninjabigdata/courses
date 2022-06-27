@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<modules>
 		<module>twitter-to-kafka-service</module>
-		<module>app-module-data</module>
+		<module>app-config-data</module>
 		<module>kafka</module>
 		<module>common-config</module>
 	</modules>
@@ -44,7 +44,7 @@
 		<dependencies>
 			<dependency>
 				<groupId>com.microservices.demo</groupId>
-				<artifactId>app-module-data</artifactId>
+				<artifactId>app-config-data</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
