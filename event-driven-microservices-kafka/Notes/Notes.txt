@@ -13,6 +13,45 @@ Patterns Used in Microservices
 	
 	
 Kafka
+	Immutable, append-only logs
+	Fast, resilient, scalable, high throughput
+	Relies on file system for storing and caching messages
+	Resilient and fault-tolerant by replication
+	Disk caching, memory mapped files instead of GC eligible memory
+		Memory mapped files are virtual
+		Accessing them in faster than disk
+	Scale by partitions
+	Ordered inside partition -> ordering of data is possible only within single partition. This startegy is called Preserve Ordering
+	As an event store
+	
+	Kafka Producer
+		Has buffers of records per topic partition which are sized at batch.size property. Size is directly proportional to throughout
+		Using a larger batch.size makes compression more efficient and if a data is larger than batch.size, it will not be batched
+		Under heavy load, data will most probably will be batched. However, under light load, data may not be batched. In that case, increasing linger.ms property can increase throughput by increasing batching with fewer requests and with an increased latency on producer send
+		max.in.flight.requests.per.connection property -> Use to limit the request number on producer
+		ack=all property -> (Default)Producer will wait until, all replicas to return a result. By setting to 1, only the broker that gets the request will send confirmation
+		compression.type property -> allows to set compression 
+			on producer -> Default is none. Possible values - none, gzip, snappy, lz4
+			on consumer -> Comprossed data will be sent from producer, then goes to topic and then to cosnumer in compressed format. This enables end-to-end compression and also share the same compressed data without re-running the compression
+		request.timeout.ms -> Default is 30 seconds. It's client property and causes client to wait that much time for the server to respond to a request
+		retries -> Causes a retry, if producer does not get an ack from kafka broker. Default is 0. If retries are allowed, batching is not possible
+		partintioner.class -> Sets the partition startegy. Default is org.apache.kafka.clients.producer.internals.DefaultPartitioner (Round-Robin)
+		
+	Kafka Confluent - kafkacat / kcat
+		https://docs.confluent.io/platform/current/app-development/kafkacat-usage.html
+		https://hub.docker.com/r/confluentinc/cp-kafkacat
+		
+		Install the kcat image from above url
+		To view the brokers
+			docker run -it --network=host confluentinc/cp-kafkacat kafkacat -L -b localhost:19092
+			
+		https://avro.apache.org/docs/1.10.2/gettingstartedjava.html
+		
+	Kafka Admin
+		For creating Topics and monitoring
+		
+		
+
 	Terminologies
 		Brokers
 		Topics
