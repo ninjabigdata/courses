@@ -1,3 +1,8 @@
+logging:
+  level:
+    ROOT: DEBUG
+    org.spring.framework.cloud.config: DEBUG
+
 twitter-to-kafka-service:
   twitter-keywords:
     - Java
@@ -28,7 +33,7 @@ kafka-config:
   num-of-partitions: 3
   replication-factor: 3
 
-kalfa-producer-config:
+kafka-producer-config:
   key-serializer-class: org.apache.kafka.common.serialization.LongSerializer
   value-serializer-class: io.confluent.kafka.serializers.KafkaAvroSerializer
   compression-type: snappy
