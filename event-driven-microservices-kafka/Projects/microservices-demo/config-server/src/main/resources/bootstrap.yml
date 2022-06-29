@@ -4,6 +4,6 @@ spring:
   cloud:
     config:
       server:
-        uri: file:///C:/Courses/courses/event-driven-microservices-kafka/Projects/microservices-demo/config-server-repository
+        uri: file://C:/Courses/courses/event-driven-microservices-kafka/Projects/microservices-demo/config-server-repository
         clone-on-start: true
     fail-fast: true
