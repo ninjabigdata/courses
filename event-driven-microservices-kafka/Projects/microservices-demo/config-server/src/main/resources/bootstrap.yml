@@ -12,3 +12,7 @@ spring:
           clone-on-start: true
         bootstrap: true
     fail-fast: true
+  security:
+    user:
+      name: spring_cloud_user
+      password: SpringCloud_1

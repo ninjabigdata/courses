@@ -7,3 +7,5 @@ spring:
     config:
       name: twitter-to-config-service,config-client
       uri: http://localhost:8080
+      username: spring_cloud_user
+      password: SpringCloud_1
